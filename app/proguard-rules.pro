@@ -3,7 +3,7 @@
 # --- Room: keep generated impl + entities/DAOs (referenced by generated code) ---
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *
--keep class com.rainweaver.moneymgr.data.** { *; }
+-keep class com.rainweaver.salaryslipmaker.data.** { *; }
 -dontwarn androidx.room.paging.**
 
 # --- Keep annotations & signatures (Kotlin/Room reflection-free but safe) ---
