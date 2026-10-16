@@ -95,3 +95,22 @@ data class PayslipLineEntity(
     val amount: String,
     val sortOrder: Int,
 )
+
+fun PayslipEntity.applyBusinessProfileSnapshot(
+    profile: BusinessProfileEntity,
+    updatedAt: Long,
+): PayslipEntity {
+    require(status == PayslipStatus.DRAFT) { "Issued payslips are immutable" }
+    require(profile.businessName.isNotBlank()) { "Company name is required" }
+    return copy(
+        businessName = profile.businessName.trim(),
+        businessLogoUri = profile.logoUri,
+        businessAddress = profile.address,
+        businessPhone = profile.phone,
+        businessEmail = profile.email,
+        businessRegistrationId = profile.registrationOrTaxId,
+        businessAccentColorHex = profile.accentColorHex,
+        businessAdditionalInfo = profile.additionalInfo,
+        updatedAt = updatedAt,
+    )
+}

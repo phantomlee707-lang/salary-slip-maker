@@ -42,6 +42,7 @@ class PayrollViewModel(app: Application) : AndroidViewModel(app) {
     suspend fun loadPayslip(id: Long): PayslipBundle? = repository.getBundle(id)
     suspend fun loadTemplate(id: Long): SalaryTemplateBundle? = repository.getTemplateBundle(id)
     suspend fun replacement(id: Long): PayslipEntity? = repository.getReplacement(id)
+    suspend fun applyCurrentBusinessProfileToDraft(id: Long) = repository.applyCurrentBusinessProfileToDraft(id)
     suspend fun saveDraft(payslip: PayslipEntity, lines: List<SalaryLine>): Long = repository.saveDraft(payslip, lines)
     suspend fun issue(id: Long): List<String> = repository.issue(id)
     suspend fun deleteDraft(id: Long): Boolean = repository.deleteDraft(id)

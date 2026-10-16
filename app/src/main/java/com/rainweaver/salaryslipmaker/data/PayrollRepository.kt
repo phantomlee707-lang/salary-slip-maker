@@ -53,6 +53,16 @@ class PayrollRepository(
 
     suspend fun getReplacement(id: Long): PayslipEntity? = payrollDao.getIssuedReplacement(id)
 
+    suspend fun applyCurrentBusinessProfileToDraft(id: Long) = database.withTransaction {
+        val current = payrollDao.getPayslip(id) ?: error("Payslip not found")
+        require(PayslipPolicy.isEditable(current.status)) { "Issued payslips are immutable" }
+        val profile = businessDao.get()?.takeIf { it.businessName.isNotBlank() }
+            ?: error("Save the company profile before applying it to this draft")
+        check(payrollDao.updatePayslip(current.applyBusinessProfileSnapshot(profile, clock())) == 1) {
+            "Company profile could not be applied"
+        }
+    }
+
     suspend fun createDraft(employeeId: Long, currencyCode: String = "IDR"): Long = database.withTransaction {
         val employee = employeeDao.getById(employeeId) ?: error("Employee not found")
         require(!employee.archived) { "Restore the archived employee before creating a new payslip" }

@@ -232,6 +232,22 @@ private fun PayslipEditorDialog(id: Long, viewModel: PayrollViewModel, payslips:
             } else Column(Modifier.heightIn(max = 540.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(current.businessName.ifBlank { "Business name not set" }, fontWeight = FontWeight.SemiBold)
                 listOf(current.businessAddress, current.businessPhone, current.businessEmail, current.businessRegistrationId).filter(String::isNotBlank).forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
+                if (draft) {
+                    Text("Drafts keep the company details captured when they were created. Apply the latest saved profile to this draft here.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    OutlinedButton(
+                        enabled = !busy,
+                        onClick = {
+                            busy = true
+                            scope.launch {
+                                runCatching { viewModel.applyCurrentBusinessProfileToDraft(id) }
+                                    .onSuccess { bundle = viewModel.loadPayslip(id); message = "Current company profile applied to this draft" }
+                                    .onFailure { message = it.message ?: "Could not apply company profile" }
+                                busy = false
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Apply current company profile") }
+                }
                 HorizontalDivider()
                 Text("Employee: ${current.employeeName}", fontWeight = FontWeight.Medium)
                 listOf(current.employeeIdentifier, current.employeeJobTitle, current.employeeDepartment).filter(String::isNotBlank).joinToString(" · ").takeIf(String::isNotBlank)?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
