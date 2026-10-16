@@ -1,0 +1,448 @@
+Rainweaver Studio
+
+Salary Slip Maker
+
+Product Requirements & Development Brief
+
+Document Version: 1.0
+Product Category: Business & Productivity
+Platform: Native Android
+Architecture: Local-first, offline-first
+Target Audience: Small businesses, micro-enterprises, and independent employers
+Developer: Rainweaver Studio
+
+---
+
+1. Executive Summary
+
+Salary Slip Maker is a lightweight Android application that enables small businesses and independent employers to create professional salary slips without the complexity of a full payroll or human resources management system.
+
+The application allows users to configure their business identity, maintain employee profiles, define earnings and deductions, automatically calculate salary totals, and generate professional PDF payslips for distribution or recordkeeping.
+
+The product is intended for businesses that need formal-looking payroll documents but do not require automated attendance tracking, employee scheduling, statutory payroll calculations, or enterprise HR infrastructure.
+
+The application operates entirely offline. Business information, employee records, salary structures, and generated payslips remain stored locally on the device.
+
+Core value proposition: Professional salary slips, straightforward calculations, and complete control over your business records.
+
+2. Product Objectives
+
+The application must:
+
+- Generate professional, readable salary slips in PDF format.
+- Allow users to customize earnings and deduction components.
+- Calculate totals automatically as amounts change.
+- Support reusable salary templates for recurring payroll.
+- Maintain employee and business profiles.
+- Preserve previously issued payslips as historical records.
+- Allow users to share or print payslips through Android's native sharing interface.
+- Support local backup and restoration.
+- Work without an internet connection, mandatory account, subscription, or remote backend.
+
+The application must prioritize simplicity, reliability, and document quality over extensive payroll functionality.
+
+3. Target Users
+
+Primary audience
+
+- Small business owners.
+- Micro and small enterprises.
+- Retail shops and food businesses.
+- Home-based businesses with employees.
+- Small agencies and independent employers.
+
+Secondary audience
+
+- Freelancers who employ assistants.
+- Family businesses formalizing salary documentation.
+- Small organizations that prepare salary slips manually.
+
+The application should accommodate users with limited payroll or accounting experience.
+
+4. Functional Requirements
+
+4.1 Business Profile
+
+Users must be able to configure the business information displayed on salary slips.
+
+Supported fields:
+
+- Business or organization name.
+- Optional logo.
+- Business address.
+- Phone number.
+- Email address.
+- Optional business registration or tax identification number.
+- Optional accent color.
+- Optional additional business information.
+
+The application must support businesses without logos or formal registration numbers.
+
+Business details should be reusable across payslips. Updating the business profile must not silently alter previously issued documents.
+
+4.2 Employee Management
+
+Users must be able to create, edit, search, and archive employee profiles.
+
+Each profile should support:
+
+- Employee full name.
+- Employee ID or payroll identifier.
+- Job title or position.
+- Optional department.
+- Optional contact information.
+- Optional notes.
+
+Only necessary information should be collected. Sensitive identifiers and bank details must not be mandatory.
+
+Archiving an employee must preserve their historical payslips.
+
+4.3 Salary Slip Creation
+
+Users must be able to create a salary slip by selecting an employee and entering the relevant payroll period.
+
+Each salary slip should support:
+
+- Unique payslip number.
+- Employee details.
+- Pay period start and end dates, or a clearly defined payroll period.
+- Payment date.
+- Currency.
+- Earnings breakdown.
+- Deductions breakdown.
+- Gross earnings.
+- Total deductions.
+- Net salary payable.
+- Optional employer notes.
+- Optional payment method or payment reference.
+
+Users must be able to save a draft, edit it, preview it, and issue the final payslip.
+
+The interface should make the distinction between a draft and an issued payslip clear.
+
+4.4 Customizable Earnings
+
+Users must be able to add, edit, reorder, and remove earning components.
+
+Examples include:
+
+- Basic salary.
+- Allowances.
+- Overtime.
+- Bonuses.
+- Incentives.
+- Commissions.
+- Other earnings.
+
+Each earning line should contain a customizable description and monetary amount.
+
+The application must not require a fixed set of earning categories. Users should be able to create business-specific labels.
+
+The gross earnings total must recalculate automatically whenever a line is added, removed, or edited.
+
+4.5 Customizable Deductions
+
+Users must be able to add, edit, reorder, and remove deduction components.
+
+Examples include:
+
+- Tax deductions entered manually.
+- Insurance or benefit contributions entered manually.
+- Advances or loans.
+- Absence deductions.
+- Other deductions.
+
+Each deduction line must support a customizable description and amount.
+
+The application must not assume that every business uses the same deductions or that every deduction is legally applicable.
+
+The total deductions must recalculate automatically as the user changes the entries.
+
+4.6 Automatic Salary Calculation
+
+All salary calculations must use a consistent and verifiable formula.
+
+Gross earnings
+
+Sum of all earning line amounts.
+
+Total deductions
+
+Sum of all deduction line amounts.
+
+Net salary
+
+Gross earnings − Total deductions.
+
+Example:
+
+Component| Amount
+Basic salary| Rp4,000,000
+Transport allowance| Rp300,000
+Bonus| Rp200,000
+Gross earnings| Rp4,500,000
+Tax deduction| Rp100,000
+Advance repayment| Rp200,000
+Total deductions| Rp300,000
+Net salary payable| Rp4,200,000
+
+These figures are illustrative only.
+
+Calculations must update immediately when values change. The application must validate monetary amounts and prevent invalid input from producing misleading totals.
+
+The PDF, preview, and saved record must all display consistent values.
+
+4.7 Salary Templates
+
+Users should be able to save reusable salary templates for employees or employee groups.
+
+A template may contain:
+
+- Default earning components.
+- Default deduction components.
+- Suggested amounts.
+- Default labels and ordering.
+- Optional notes.
+
+Templates must make recurring salary-slip creation faster.
+
+Applying a template must copy its configuration into the new draft. Editing a template later must not modify previously issued payslips.
+
+Templates must not silently introduce outdated or incorrect statutory calculations.
+
+4.8 Payslip History
+
+The application must provide a searchable history of salary slips.
+
+Users should be able to:
+
+- View issued payslips.
+- Search by employee or payslip number.
+- Filter by payroll period.
+- View gross earnings, deductions, and net salary.
+- Preview or export a previously issued payslip.
+- Duplicate an earlier payslip as the basis for a new draft.
+
+Issued payslips must preserve their original financial values, employee details, and displayed business information.
+
+If a correction is necessary, the application should support creating a corrected replacement linked to the original record, with a clear indication of which document supersedes the other.
+
+Issued records must not be silently overwritten when creating the next month's payslip.
+
+4.9 PDF Generation
+
+PDF export is a core feature, not an optional enhancement.
+
+The application must produce professional salary slips suitable for printing, emailing, messaging, and business recordkeeping.
+
+Each PDF should include:
+
+- Business header and optional logo.
+- Payslip number and payroll period.
+- Employee identity and position.
+- Earnings breakdown.
+- Gross earnings total.
+- Deductions breakdown.
+- Total deductions.
+- Clearly emphasized net salary payable.
+- Payment date, where provided.
+- Optional notes.
+- Document generation or issuance information as appropriate.
+
+The document should use a clean, restrained, print-friendly visual style.
+
+Layout requirements:
+
+- Consistent typography and spacing.
+- Clear section hierarchy.
+- Right-aligned monetary values.
+- Proper currency formatting.
+- Appropriate whitespace between line items.
+- No overlapping or clipped text.
+- Graceful handling of long employee names and custom descriptions.
+- Reliable rendering when optional fields are absent.
+- Correct output on standard paper sizes, including A4.
+
+A logo must not be required to produce a polished document.
+
+4.10 PDF Sharing and Printing
+
+Users must be able to:
+
+- Export a payslip to PDF.
+- Share the PDF using Android's native Sharesheet.
+- Print through compatible Android print services.
+- Save exported documents through supported system interfaces.
+
+The application must not upload payslips to an external service automatically.
+
+4.11 Backup and Restore
+
+Users must be able to back up and restore:
+
+- Business profiles.
+- Employee profiles.
+- Salary templates.
+- Draft payslips.
+- Issued payslip records.
+- Relevant application settings.
+
+Backup files must be handled safely and validated before restoration.
+
+The application should clearly explain whether restoration will replace or merge existing records. Destructive restoration must require explicit user confirmation.
+
+5. User Experience and Navigation
+
+The interface should provide a simple workflow:
+
+1. Configure the business profile.
+2. Add employee profiles.
+3. Create or select a salary template.
+4. Enter the payroll period.
+5. Review and adjust earnings and deductions.
+6. Preview the salary slip.
+7. Save the draft or issue the payslip.
+8. Export or share the PDF.
+
+Suggested primary navigation:
+
+- Dashboard: Recent payslips and quick actions.
+- Employees: Employee profile management.
+- Payslips: Drafts, issued records, and history.
+- Templates: Reusable salary structures.
+- Settings: Business profile, currency, backup, and preferences.
+
+The application should minimize the number of steps required to create a recurring payslip.
+
+The net salary payable must be visually prominent during editing and preview.
+
+6. Technical Requirements
+
+6.1 Existing Codebase Review
+
+Before implementation, inspect the existing Rainweaver Studio Money Manager project.
+
+Identify its current technology stack, database implementation, navigation patterns, PDF generation approach, build configuration, and reusable UI components.
+
+Reuse suitable, proven components where practical. Do not introduce a new framework or migrate the project without a specific technical justification.
+
+Salary Slip Maker must remain a separate application with independent payroll data and domain logic.
+
+6.2 Local-First Architecture
+
+- All core functionality must operate offline.
+- Business, employee, template, and payslip records must be stored locally.
+- No mandatory registration or online authentication.
+- No backend dependency for calculations, PDF generation, or recordkeeping.
+- No unnecessary background services or network requests.
+
+6.3 Data Integrity
+
+- Use consistent monetary arithmetic and rounding rules.
+- Recalculate totals from the underlying line items.
+- Validate dates, amounts, and required fields.
+- Preserve issued payslips as historical records.
+- Use safe database migrations.
+- Avoid data loss during upgrades.
+- Keep preview, PDF, and saved values consistent.
+
+6.4 Security and Privacy
+
+Salary information is sensitive business data.
+
+The application should:
+
+- Keep salary records local by default.
+- Avoid logging salary amounts or employee details unnecessarily.
+- Avoid transmitting payslip data to third parties.
+- Support an optional app lock if feasible.
+- Explain where backups and exported PDFs are stored.
+- Leave control over sharing and deletion to the user, subject to historical-record safeguards.
+
+An app lock should be described as an additional privacy measure, not as a guarantee of encryption or device-level security.
+
+6.5 Performance and Compatibility
+
+- Keep the APK lightweight.
+- Minimize memory usage and startup time.
+- Support modest Android devices.
+- Avoid unnecessary dependencies.
+- Ensure smooth operation with growing employee and payslip histories.
+- Test PDF generation on realistic devices and screen sizes.
+
+7. MVP Scope
+
+The initial release must include:
+
+1. Business profile configuration.
+2. Employee profile management.
+3. Salary-slip creation and editing.
+4. Custom earning and deduction lines.
+5. Automatic gross, deduction, and net salary calculations.
+6. Reusable salary templates.
+7. Draft and issued payslip states.
+8. Historical payslip records.
+9. Professional PDF generation.
+10. Android sharing and printing.
+11. Local backup and restore.
+
+The MVP must be a dependable document-generation and salary-calculation tool, not a full payroll platform.
+
+8. Out of Scope
+
+The following features are excluded from the initial release:
+
+- Automatic tax calculations.
+- Automatic BPJS Kesehatan or BPJS Ketenagakerjaan calculations.
+- Attendance tracking.
+- Leave management.
+- Employee scheduling.
+- Automatic salary disbursement or bank transfers.
+- Employee self-service portals.
+- Cloud payroll synchronization.
+- Multi-user approval workflows.
+- Full HRIS functionality.
+- Accounting ledger integration.
+
+Future statutory payroll features for Indonesia must use clearly documented, versioned, and tested rules. They must not be approximated or presented as authoritative without adequate verification.
+
+9. Acceptance Criteria
+
+The application is ready for initial release when:
+
+1. Users can create and edit business and employee profiles.
+2. Users can add arbitrary earning and deduction lines.
+3. Gross earnings, total deductions, and net salary calculate correctly.
+4. Invalid monetary values are rejected or handled explicitly.
+5. Templates can be reused without altering historical records.
+6. Draft payslips remain editable.
+7. Issued payslips preserve their original data.
+8. Corrections can be recorded without silently overwriting the original issued record.
+9. Generated PDFs match the saved calculation values.
+10. PDFs render correctly with long descriptions and optional fields.
+11. PDF spacing, alignment, and pagination are tested.
+12. Sharing and printing work through supported Android interfaces.
+13. Backup and restore preserve supported records.
+14. Core functionality works in airplane mode.
+15. Database upgrades do not silently discard existing user data.
+
+10. Development Phases
+
+Phase 1 — Foundation: Inspect the existing project, define domain models, establish local storage, and implement business and employee profiles.
+
+Phase 2 — Salary Calculations: Implement earnings, deductions, automatic totals, draft editing, and reusable templates.
+
+Phase 3 — Payslip Lifecycle: Implement issuance, historical records, duplication, and corrected replacements.
+
+Phase 4 — PDF and Sharing: Build the salary-slip layout, verify calculations and rendering, and integrate native sharing and printing.
+
+Phase 5 — Data Protection and Testing: Implement backup and restore, validate data integrity, test offline operation, and prepare the release build.
+
+11. Product Success Criteria
+
+A small-business owner should be able to prepare a professional salary slip in a few minutes without manually calculating every subtotal or subscribing to a complicated payroll service.
+
+The finished product should make small businesses look more professional while reducing repetitive administrative work.
+
+Rainweaver Studio
+Practical tools for everyday work. Lightweight. Offline. Yours.
