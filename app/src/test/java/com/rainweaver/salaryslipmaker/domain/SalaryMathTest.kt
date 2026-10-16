@@ -26,6 +26,21 @@ class SalaryMathTest {
     }
 
     @Test
+    fun groupsDocumentLinesByKindWhilePreservingOrderWithinEachSection() {
+        val lines = listOf(
+            SalaryLine("Tax", SalaryLineKind.DEDUCTION, BigDecimal("10")),
+            SalaryLine("Base pay", SalaryLineKind.EARNING, BigDecimal("100")),
+            SalaryLine("Bonus", SalaryLineKind.EARNING, BigDecimal("20")),
+            SalaryLine("Advance", SalaryLineKind.DEDUCTION, BigDecimal("5")),
+        )
+
+        val sections = SalaryMath.groupForDocument(lines)
+
+        assertEquals(listOf("Base pay", "Bonus"), sections.earnings.map { it.label })
+        assertEquals(listOf("Tax", "Advance"), sections.deductions.map { it.label })
+    }
+
+    @Test
     fun acceptsValidGroupedAndUngroupedDecimalInput() {
         assertMoney("1234567.89", SalaryMath.parseAmount("1,234,567.89")!!)
         assertMoney("4000000", SalaryMath.parseAmount("4000000")!!)

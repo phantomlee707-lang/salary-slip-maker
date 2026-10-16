@@ -23,6 +23,11 @@ data class SalaryTotals(
     val negativeNet: Boolean get() = netPay.signum() < 0
 }
 
+data class SalaryLineSections(
+    val earnings: List<SalaryLine>,
+    val deductions: List<SalaryLine>,
+)
+
 object SalaryMath {
     private val amountPattern = Regex("(?:[0-9]{1,3}(?:,[0-9]{3})+|[0-9]+)(?:\\.[0-9]{1,6})?")
 
@@ -44,6 +49,11 @@ object SalaryMath {
             .fold(BigDecimal.ZERO) { total, line -> total.add(line.amount) }
         return SalaryTotals(earnings, deductions, earnings.subtract(deductions))
     }
+
+    fun groupForDocument(lines: List<SalaryLine>): SalaryLineSections = SalaryLineSections(
+        earnings = lines.filter { it.kind == SalaryLineKind.EARNING },
+        deductions = lines.filter { it.kind == SalaryLineKind.DEDUCTION },
+    )
 }
 
 /** Shared display formatter used by both Compose summaries and PDF output. */

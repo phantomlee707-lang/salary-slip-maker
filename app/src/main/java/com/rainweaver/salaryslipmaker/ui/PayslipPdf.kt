@@ -21,7 +21,6 @@ import androidx.core.content.FileProvider
 import com.rainweaver.salaryslipmaker.data.PayslipBundle
 import com.rainweaver.salaryslipmaker.data.PayslipEntity
 import com.rainweaver.salaryslipmaker.domain.PayslipStatus
-import com.rainweaver.salaryslipmaker.domain.SalaryLineKind
 import com.rainweaver.salaryslipmaker.domain.SalaryMath
 import com.rainweaver.salaryslipmaker.domain.SalaryMoneyFormatter
 import java.io.File
@@ -138,6 +137,31 @@ private suspend fun createPayslipPdf(context: Context, bundle: PayslipBundle): F
                 y += 18f
             }
         }
+        fun drawSectionHeader(label: String) {
+            ensureSpace(44f)
+            canvas.drawRect(MARGIN, y - 13f, PAGE_WIDTH - MARGIN, y + 5f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(235, 242, 240) })
+            canvas.drawText(label, MARGIN + 5f, y, bold)
+            canvas.drawText("AMOUNT", PAGE_WIDTH - MARGIN - bold.measureText("AMOUNT") - 5f, y, bold)
+            y += 22f
+        }
+        fun drawLineItems(items: List<com.rainweaver.salaryslipmaker.domain.SalaryLine>, emptyLabel: String) {
+            if (items.isEmpty()) {
+                drawWrapped(emptyLabel, muted)
+                return
+            }
+            items.forEach { line ->
+                val amountLines = wrap(SalaryMoneyFormatter.format(line.amount, slip.currencyCode), regular, 155f)
+                val labelLines = wrap(line.label, regular, PAGE_WIDTH - MARGIN * 2 - 165f)
+                val rowLines = maxOf(1, amountLines.size, labelLines.size)
+                repeat(rowLines) { index ->
+                    ensureSpace(16f)
+                    labelLines.getOrNull(index)?.let { canvas.drawText(it, MARGIN + 5f, y, regular) }
+                    amountLines.getOrNull(index)?.let { segment -> canvas.drawText(segment, PAGE_WIDTH - MARGIN - 5f - regular.measureText(segment), y, regular) }
+                    y += 16f
+                }
+                y += 3f
+            }
+        }
 
         canvas.drawRect(0f, 0f, PAGE_WIDTH.toFloat(), 8f, Paint().apply { color = accent })
         canvas.drawText("SALARY SLIP", MARGIN, y + 5f, title)
@@ -157,26 +181,17 @@ private suspend fun createPayslipPdf(context: Context, bundle: PayslipBundle): F
         if (slip.paymentReference.isNotBlank()) drawValue("Payment reference", slip.paymentReference)
         slip.issuedAt?.let { drawValue("Issued", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(it))) }
         slip.supersedesPayslipNumber?.let { drawValue("Correction of payslip", it) }
-        y += 8f; ensureSpace(24f)
-        canvas.drawRect(MARGIN, y - 13f, PAGE_WIDTH - MARGIN, y + 5f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(235, 242, 240) })
-        canvas.drawText("EARNINGS AND DEDUCTIONS", MARGIN + 5f, y, bold)
-        canvas.drawText("AMOUNT", PAGE_WIDTH - MARGIN - bold.measureText("AMOUNT") - 5f, y, bold); y += 22f
-        bundle.lines.forEach { line ->
-            val prefix = if (line.kind == SalaryLineKind.DEDUCTION) "Deduction · " else "Earning · "
-            val amountLines = wrap(SalaryMoneyFormatter.format(line.amount, slip.currencyCode), regular, 155f)
-            val labelLines = wrap(prefix + line.label, regular, PAGE_WIDTH - MARGIN * 2 - 165f)
-            val rowLines = maxOf(1, amountLines.size, labelLines.size)
-            repeat(rowLines) { index ->
-                ensureSpace(16f)
-                labelLines.getOrNull(index)?.let { canvas.drawText(it, MARGIN + 5f, y, regular) }
-                amountLines.getOrNull(index)?.let { segment -> canvas.drawText(segment, PAGE_WIDTH - MARGIN - 5f - regular.measureText(segment), y, regular) }
-                y += 16f
-            }
-            y += 3f
-        }
-        y += 4f; canvas.drawLine(MARGIN, y, PAGE_WIDTH - MARGIN, y, rule); y += 20f
+        val sections = SalaryMath.groupForDocument(bundle.lines)
+        y += 8f
+        drawSectionHeader("EARNINGS")
+        drawLineItems(sections.earnings, "No earnings")
         drawValue("Gross earnings", SalaryMoneyFormatter.format(totals.grossEarnings, slip.currencyCode))
+        y += 7f; canvas.drawLine(MARGIN, y, PAGE_WIDTH - MARGIN, y, rule); y += 16f
+        drawSectionHeader("DEDUCTIONS")
+        drawLineItems(sections.deductions, "No deductions")
         drawValue("Total deductions", SalaryMoneyFormatter.format(totals.totalDeductions, slip.currencyCode))
+        y += 8f
+        canvas.drawLine(MARGIN, y, PAGE_WIDTH - MARGIN, y, rule); y += 16f
         ensureSpace(32f)
         canvas.drawRect(MARGIN, y - 14f, PAGE_WIDTH - MARGIN, y + 8f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = accent })
         val whiteBold = Paint(bold).apply { color = android.graphics.Color.WHITE; textSize = 13f }
