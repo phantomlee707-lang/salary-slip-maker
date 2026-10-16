@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rainweaver.salaryslipmaker.ui.PayrollViewModel
 import com.rainweaver.salaryslipmaker.ui.ProfileViewModel
 import com.rainweaver.salaryslipmaker.ui.SalarySlipApp
 import com.rainweaver.salaryslipmaker.ui.SalarySlipTheme
@@ -16,7 +17,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             SalarySlipTheme {
                 val profileViewModel: ProfileViewModel = viewModel()
-                SalarySlipApp(profileViewModel)
+                val payrollViewModel: PayrollViewModel = viewModel()
+                SalarySlipApp(profileViewModel, payrollViewModel)
             }
         }
     }

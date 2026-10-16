@@ -18,9 +18,9 @@ A lightweight Android app for small businesses and independent employers to prep
 
 ## Development baseline
 
-Phase 1 begins by adapting proven patterns from the separate [Money Manager](https://github.com/phantomlee707-lang/money-manager) Android project. Its stack is Kotlin, Jetpack Compose, Room, and Android's document APIs; its app uses `minSdk 24`, `targetSdk 34`, and requests no `INTERNET` permission. Salary Slip Maker will have a distinct application ID, database, and payroll domain model. No Money Manager transaction schema or financial records are shared.
+Salary Slip Maker is a separate Kotlin/Jetpack Compose + Room application with its own package, payroll domain, and database (`salary_slip_maker.db`). It targets Android 14 (API 34), supports Android 7.0+ (API 24), and requests no `INTERNET` permission. It uses decimal arithmetic for salary values and explicit Room migrations; no Money Manager records or schema are shared.
 
-Phase 1 is implemented in this repository: the app now has a standalone identity, Room-backed business and employee profiles, and the initial Compose profile workflows. Payroll lines, templates, issue/history, PDF export, and backup/restore are not implemented yet.
+The MVP implementation is complete: business and employee profiles, reusable templates, draft editing, immutable issued history, correction/duplication links, A4 PDF creation/export/share/print, and validated local JSON backup/restore.
 
 ## Data-integrity principles
 
@@ -35,10 +35,27 @@ Phase 1 is implemented in this repository: the app now has a standalone identity
 
 ## Roadmap
 
-- [x] Phase 1 — inspect Money Manager patterns; define payroll models; local database; business and employee profiles.
-- [ ] Phase 2 — earnings/deductions, totals, draft editing, reusable templates.
-- [ ] Phase 3 — issuance, immutable history, search/filter, duplication, corrected replacements.
-- [ ] Phase 4 — A4 PDF layout, sharing/printing, rendering tests.
-- [ ] Phase 5 — validated backup/restore, offline/privacy checks, migration tests, release preparation.
+- [x] Phase 1 — inspect the base app; define payroll models; local database; business and employee profiles.
+- [x] Phase 2 — earnings/deductions, totals, draft editing, reusable templates.
+- [x] Phase 3 — issuance, immutable history, search/filter, duplication, corrected replacements.
+- [x] Phase 4 — A4 PDF export, native sharing/printing, calculation parity checks.
+- [x] Phase 5 — validated local backup/restore, offline/privacy checks, migration and release preparation.
+
+## Privacy and limitations
+
+- All application data is stored in the local Room database. The app does not require an account or network access.
+- Backup files are unencrypted JSON and may contain employee details and salary amounts. Choose a private destination; restoration replaces all local records only after an explicit confirmation.
+- PDFs are generated locally. Exporting, printing, or sharing occurs only after the user selects a system destination or recipient.
+- The app does not calculate tax, BPJS, attendance, or other statutory payroll amounts. Employers enter deductions manually and must verify applicable rules.
+- Keep the release keystore and `keystore.properties` backed up securely; they are intentionally excluded from Git.
+
+## Build and test
+
+```sh
+./gradlew :app:testDebugUnitTest :app:assembleDebug --no-daemon
+./gradlew :app:assembleRelease --no-daemon
+```
+
+Requirements: JDK 17 and Android SDK 34. The release variant requires a local `keystore.properties` file and the matching `release.keystore`.
 
 Full requirements: [`docs/SALARY_SLIP_MAKER_BRIEF.txt`](docs/SALARY_SLIP_MAKER_BRIEF.txt).

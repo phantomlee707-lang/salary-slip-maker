@@ -21,6 +21,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -59,21 +63,38 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rainweaver.salaryslipmaker.data.BusinessProfileEntity
 import com.rainweaver.salaryslipmaker.data.EmployeeEntity
+import com.rainweaver.salaryslipmaker.data.PayslipBundle
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SalarySlipApp(viewModel: ProfileViewModel) {
+fun SalarySlipApp(viewModel: ProfileViewModel, payrollViewModel: PayrollViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val payroll by payrollViewModel.state.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableIntStateOf(0) }
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var pendingPdf by remember { mutableStateOf<PayslipBundle?>(null) }
+    val pdfLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        val bundle = pendingPdf
+        pendingPdf = null
+        if (uri != null && bundle != null) scope.launch {
+            runCatching { exportPayslipPdf(context, bundle, uri) }
+                .onSuccess { payrollViewModel.message("PDF exported") }
+                .onFailure { payrollViewModel.message(it.message ?: "PDF export failed") }
+        }
+    }
+    val onExport: (PayslipBundle) -> Unit = { bundle ->
+        pendingPdf = bundle
+        pdfLauncher.launch("${bundle.payslip.number}.pdf")
+    }
 
     LaunchedEffect(state.message) {
-        state.message?.let {
-            scope.launch { snackbar.showSnackbar(it) }
-            viewModel.consumeMessage()
-        }
+        state.message?.let { scope.launch { snackbar.showSnackbar(it) }; viewModel.consumeMessage() }
+    }
+    LaunchedEffect(payroll.message) {
+        payroll.message?.let { scope.launch { snackbar.showSnackbar(it) }; payrollViewModel.consumeMessage() }
     }
 
     Scaffold(
@@ -87,25 +108,31 @@ fun SalarySlipApp(viewModel: ProfileViewModel) {
         },
         bottomBar = {
             NavigationBar {
-                NavigationBarItem(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Default.Business, contentDescription = "Business profile") },
-                    label = { Text("Business") },
+                val tabs = listOf(
+                    Triple("Home", Icons.Default.Home, 0),
+                    Triple("People", Icons.Default.People, 1),
+                    Triple("Payslips", Icons.AutoMirrored.Filled.ReceiptLong, 2),
+                    Triple("Templates", Icons.AutoMirrored.Filled.ViewList, 3),
+                    Triple("Business", Icons.Default.Business, 4),
                 )
-                NavigationBarItem(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.Archive, contentDescription = "Employees") },
-                    label = { Text("Employees") },
-                )
+                tabs.forEach { (label, icon, index) ->
+                    NavigationBarItem(
+                        selected = selectedTab == index,
+                        onClick = { selectedTab = index },
+                        icon = { Icon(icon, contentDescription = label) },
+                        label = { Text(label) },
+                    )
+                }
             }
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
         when (selectedTab) {
-            0 -> BusinessProfileScreen(viewModel, state.business, Modifier.padding(padding))
-            else -> EmployeeDirectoryScreen(viewModel, state.employees, Modifier.padding(padding))
+            0 -> PayrollHomeScreen(payroll.payslips, state.employees, Modifier.padding(padding), onNavigate = { selectedTab = it })
+            1 -> EmployeeDirectoryScreen(viewModel, state.employees, Modifier.padding(padding))
+            2 -> PayslipDirectoryScreen(payrollViewModel, state.employees, payroll.payslips, Modifier.padding(padding), onExport)
+            3 -> SalaryTemplateScreen(payrollViewModel, state.employees, payroll.templates, payroll.payslips, Modifier.padding(padding), onExport)
+            else -> BusinessProfileScreen(viewModel, state.business, Modifier.padding(padding), onMessage = { payrollViewModel.message(it) })
         }
     }
 }
@@ -115,6 +142,7 @@ private fun BusinessProfileScreen(
     viewModel: ProfileViewModel,
     current: BusinessProfileEntity,
     modifier: Modifier = Modifier,
+    onMessage: (String) -> Unit = {},
 ) {
     val context = LocalContext.current
     var profile by remember(current) { mutableStateOf(current) }
@@ -165,6 +193,8 @@ private fun BusinessProfileScreen(
         Button(onClick = { viewModel.saveBusiness(profile) }, enabled = profile.businessName.isNotBlank(), modifier = Modifier.fillMaxWidth()) {
             Text("Save business profile")
         }
+        Spacer(Modifier.height(8.dp))
+        BackupRestoreSection(onMessage)
         Spacer(Modifier.height(12.dp))
     }
 }

@@ -17,6 +17,9 @@ interface BusinessProfileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(profile: BusinessProfileEntity)
+
+    @Query("DELETE FROM business_profile")
+    suspend fun clearForRestore()
 }
 
 @Dao
@@ -26,6 +29,15 @@ interface EmployeeDao {
 
     @Update
     suspend fun update(employee: EmployeeEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun restoreAll(employees: List<EmployeeEntity>)
+
+    @Query("SELECT * FROM employees ORDER BY id ASC")
+    suspend fun getAllForBackup(): List<EmployeeEntity>
+
+    @Query("DELETE FROM employees")
+    suspend fun clearForRestore()
 
     @Query("SELECT * FROM employees ORDER BY archived ASC, fullName COLLATE NOCASE ASC, id ASC")
     fun observeAll(): Flow<List<EmployeeEntity>>
