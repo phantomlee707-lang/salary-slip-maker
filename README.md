@@ -20,6 +20,8 @@ A lightweight Android app for small businesses and independent employers to prep
 
 Phase 1 begins by adapting proven patterns from the separate [Money Manager](https://github.com/phantomlee707-lang/money-manager) Android project. Its stack is Kotlin, Jetpack Compose, Room, and Android's document APIs; its app uses `minSdk 24`, `targetSdk 34`, and requests no `INTERNET` permission. Salary Slip Maker will have a distinct application ID, database, and payroll domain model. No Money Manager transaction schema or financial records are shared.
 
+Phase 1 is implemented in this repository: the app now has a standalone identity, Room-backed business and employee profiles, and the initial Compose profile workflows. Payroll lines, templates, issue/history, PDF export, and backup/restore are not implemented yet.
+
 ## Data-integrity principles
 
 1. Recompute totals from line items; never treat a displayed total as the source of truth.
@@ -33,7 +35,7 @@ Phase 1 begins by adapting proven patterns from the separate [Money Manager](htt
 
 ## Roadmap
 
-- [ ] Phase 1 — inspect Money Manager patterns; define payroll models; local database; business and employee profiles.
+- [x] Phase 1 — inspect Money Manager patterns; define payroll models; local database; business and employee profiles.
 - [ ] Phase 2 — earnings/deductions, totals, draft editing, reusable templates.
 - [ ] Phase 3 — issuance, immutable history, search/filter, duplication, corrected replacements.
 - [ ] Phase 4 — A4 PDF layout, sharing/printing, rendering tests.

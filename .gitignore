@@ -1,7 +1,7 @@
 # Gradle / Android
 .gradle/
-**/build/
 .kotlin/
+**/build/
 local.properties
 
 # IDE
@@ -11,6 +11,8 @@ local.properties
 # Signing material and secrets
 *.jks
 *.keystore
+*.apk
+*.aab
 keystore.properties
 .env
 .env.*
